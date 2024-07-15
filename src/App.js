@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    useEffect(() => {
+        const socket = new WebSocket('ws://localhost:5000/');
+
+        socket.onopen = () => {
+            console.log('Connected to server');
+            socket.send('Hello, server! Love, Client.');
+        };
+
+        socket.onmessage = (event) => {
+            console.log('Received: ' + event.data);
+        };
+
+        socket.onclose = (event) => {
+            console.log('Connection closed: ', event);
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error: ', error);
+        };
+
+        return () => {
+            socket.close();
+        };
+    }, []);
+
+    return (
+        <div className="App">
+            <h1>WebSocket Client</h1>
+        </div>
+    );
 }
 
 export default App;
